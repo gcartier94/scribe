@@ -138,3 +138,5 @@ dmypy.json
 cython_debug/test.txt
 
 notes.json
+data.json
+.vscode/
