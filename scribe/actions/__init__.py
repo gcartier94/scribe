@@ -1,1 +1,11 @@
-from .actions import AddNote, ListNotes, DeleteNote, CompleteNote, WipNote, UpdateNote, LongListNotes, MoveNote, RevertNote
+from .actions import (AddNote,
+                      ListNotes,
+                      DeleteNote,
+                      CompleteNote,
+                      WipNote,
+                      UpdateNote,
+                      LongListNotes,
+                      RevertNote,
+                      ListContext,
+                      SetContext,
+                      TestAction)

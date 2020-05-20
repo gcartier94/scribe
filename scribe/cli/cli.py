@@ -16,23 +16,37 @@ import sys
 import os
 sys.path.insert(0, os.path.abspath('..'))
 
-from actions import ListNotes, AddNote, DeleteNote, CompleteNote, WipNote, RevertNote, UpdateNote, LongListNotes, MoveNote
+from actions import (AddNote,
+                     ListNotes,
+                     DeleteNote,
+                     CompleteNote,
+                     WipNote,
+                     UpdateNote,
+                     LongListNotes,
+                     RevertNote,
+                     ListContext,
+                     SetContext,
+                     TestAction)
 
 VERSION = '0.1.0'
 PROGRAM_NAME = 'Scribe'
 
-class Cli:
 
+class Cli:
+    """
+    Class for the CLI based on argparse
+    """
     def __init__(self):
         self.parser = argparse.ArgumentParser(prog='scribe',
                                               usage='%(prog)s [options]',
                                               description='Manage notes and to-do\'s using a CLI',
                                               epilog='Have a great day! Now get things done!')
+
         self.parser.version = f'{PROGRAM_NAME} - {VERSION}'
-        self.initiate_arguments()
+        self.initialize_base_arguments()
         self.args = self.parser.parse_args()
 
-    def initiate_arguments(self):
+    def initialize_base_arguments(self):
 
         self.parser.add_argument('-v',
                                  '--version',
@@ -55,26 +69,20 @@ class Cli:
                                  action=LongListNotes,
                                  help='long list all to-do notes')
 
+        self.parser.add_argument('--context',
+                                 action=ListContext,
+                                 help='list context available and context set')
+
+        self.parser.add_argument('--set-context',
+                                 action=SetContext,
+                                 help='set a new context')
+
         self.parser.add_argument('-a',
                                  '--add',
                                  metavar='NOTE',
                                  action=AddNote,
                                  type=str,
                                  help='add new to-do note')
-
-        self.parser.add_argument("-y",
-                                 action='store_true',
-                                 help='list context')
-
-        self.parser.add_argument('--set-context',
-                                 metavar='CONTEXT',
-                                 type=str,
-                                 help='set context')
-
-        self.parser.add_argument('--deadline',
-                                 metavar='DAYS',
-                                 type=str,
-                                 help='defines dealine to note')
 
         self.parser.add_argument('-d',
                                  '--delete',
@@ -85,35 +93,24 @@ class Cli:
         self.parser.add_argument('-u',
                                  '--update',
                                  nargs=2,
+                                 metavar='TODO',
                                  action=UpdateNote,
-                                 metavar='TODO',
                                  help='update a to-do description')
-
-        self.parser.add_argument('-m',
-                                 '--move',
-                                 action=MoveNote,
-                                 metavar='TODO',
-                                 help='move a to-do to a given position')
 
         self.parser.add_argument('-c',
                                  '--complete',
                                  action=CompleteNote,
                                  metavar='TODO',
                                  help='mark a to-do complete')
-    
+
         self.parser.add_argument('-r',
                                  '--revert',
                                  action=RevertNote,
                                  metavar='TODO',
                                  help='revert a to-do to waiting status')
-        
+
         self.parser.add_argument('-w',
                                  '--wip',
                                  action=WipNote,
                                  metavar='TODO',
-                                 help='mark a to-do as in progress')        
-     
-        self.parser.add_argument('-i',
-                                 '--incomplete',
-                                 metavar='TODO',
-                                 help='mark a to-do incomplete')
+                                 help='mark a to-do as in progress')

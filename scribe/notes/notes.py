@@ -1,3 +1,16 @@
+"""
+Scribe - CLI tool to manage to-do notes.
+
+This program and the accompanying materials are made available under the terms of
+The MIT License which accompanies this distribution, and is available at
+
+https://mit-license.org/
+
+SPDX-License-Identifier: MIT
+
+Copyright (c) 2020 Guilherme Cartier.
+"""
+
 import os
 import json
 import random
@@ -6,13 +19,17 @@ import datetime
 CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
 NOTES_DIRECTORY = os.path.join(CURRENT_DIR, 'data')
 NOTES_FILE = os.path.join(NOTES_DIRECTORY, 'data.json')
+CONTEXT_FILE = os.path.join(NOTES_DIRECTORY, 'context.txt')
 
 
 class Notes:
-
+    """
+    Class responsible for handling the data (notes and contexts)
+    """
     def __init__(self):
         self.notes_json = self.load_notes()
         self.note_list = self.notes_json['note_list']
+        self.current_context = self.load_current_context()
         self.context_list = ['Misc']
         self.load_context_list()
         self.number_of_notes = len(self.note_list)
@@ -21,10 +38,20 @@ class Notes:
         with open(NOTES_FILE, 'r') as json_file:
             return json.load(json_file)
 
+    def load_current_context(self):
+        with open(CONTEXT_FILE, 'r') as context_file:
+            return context_file.readlines()[0]
+
+    def save_current_context(self):
+        with open(CONTEXT_FILE, 'w') as context_file:
+            return context_file.write(self.current_context)
+
     def load_context_list(self):
+        if self.current_context and self.current_context not in self.context_list:
+            self.context_list.append(self.current_context)
         for note in self.note_list:
             context = note['context']
-            if context not in self.context_list:
+            if context and context not in self.context_list:
                 self.context_list.append(context)
 
     def save_note(self):
@@ -36,13 +63,13 @@ class Notes:
         bits = random.getrandbits(16)
         return str('%04x' % bits)
 
-    def generate_note(self, short_description, context=None):
+    def generate_note(self, short_description):
         hash_id = self.generate_hash_id()
         right_now = datetime.datetime.now()
         right_now_str = right_now.strftime('%m/%d/%Y @ %H:%M')
         note_json = {
             'note_id': hash_id,
-            'context': context,
+            'context': self.current_context,
             'short_description': short_description,
             'status': 'waiting',
             'created_on': right_now_str,
@@ -65,6 +92,11 @@ class Notes:
         for note in self.note_list:
             if note['note_id'] == note_id:
                 return note
+        print('Unable to find note')
+        exit(1)
+
+    def get_note_list_by_context(self, context):
+        return [note for note in self.note_list if note['context'] == context]
 
     def get_note_index_by_note_id(self, note_id):
         for i in range(len(self.note_list)):
@@ -92,5 +124,3 @@ class Notes:
             self.note_list[target_position] = self.note_list[origin_position]
             self.note_list[origin_position] = temporary_storage
             self.save_note()
-
-
