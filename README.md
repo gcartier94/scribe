@@ -2,6 +2,8 @@
 
 Scribe is a simple to use python-based tool to manage "TO DO" notes from the command line. 
 
+![](./docs/scribe.gif)
+
 ## Why?
 
 - I like CLI tools
